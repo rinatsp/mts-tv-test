@@ -4,13 +4,16 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { Channel, Channels, Genre } from "../model/channel.models";
 import { take, tap } from "rxjs/operators";
 
-
 @Injectable({
     providedIn: "root",
 })
 export class ChannelsLoadDataService {
     private genreList = new BehaviorSubject<Genre[]>(null);
     public showGenreList$: Observable<Genre[]> = this.genreList.asObservable();
+    public genreId: string;
+
+    public loadChunks = new BehaviorSubject<Channel[]>(null);
+    public showChunks$: Observable<Channel[]> = this.loadChunks.asObservable();
 
     private _data: Channels;
 
@@ -33,9 +36,6 @@ export class ChannelsLoadDataService {
     get total(): number {
         return this._total;
     }
-
-    public loadChunks = new BehaviorSubject<Channel[]>(null);
-    public showChunks$: Observable<Channel[]> = this.loadChunks.asObservable();
 
     private _chunks = 24;
 
@@ -63,26 +63,39 @@ export class ChannelsLoadDataService {
             if (value?.genres) genre = [...genre, ...value.genres];
         });
         // нужно удалить дубликаты
-        this.genreList.next(genre);
+        this.genreList.next(
+            genre.filter((thing, index) => {
+                const _thing = JSON.stringify(thing);
+                return (
+                    index ===
+                    genre.findIndex((obj) => {
+                        return JSON.stringify(obj) === _thing;
+                    })
+                );
+            })
+        );
     }
 
     public filterByGenre(genreID: string) {
-        if (this.chunks < this.total) {
-            this.loadChunks.next(
-                this.data.channelDetails
-                    .slice(0, this.chunks)
-                    .filter((value: Channel) => value?.genres?.find((genre) => genreID === genre?.genreID))
-            );
-            return;
-        }
+        this.genreId = genreID;
+        this.loadChunks.next(
+            this.chunks < this.total
+                ? this.data.channelDetails
+                      .slice(0, this.chunks)
+                      .filter((value: Channel) => value?.genres?.find((genre) => this.findGenre(genre, genreID)))
+                : this.data.channelDetails.filter((value: Channel) =>
+                      value?.genres?.find((genre) => this.findGenre(genre, genreID))
+                  )
+        );
+    }
+
+    private findGenre(genre: Genre, genreID: string) {
+        if (!genreID) return true;
+        return genreID === genre?.genreID;
     }
 
     public showMore(): void {
         this._chunks += 12;
-        if (this.chunks > this.total) {
-            this.loadChunks.next(this.data.channelDetails);
-            return;
-        }
-        this.loadChunks.next(this.data.channelDetails.slice(0, this.chunks));
+        this.filterByGenre(this.genreId || null);
     }
 }
