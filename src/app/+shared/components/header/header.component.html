@@ -12,7 +12,7 @@
 </nav>
 
 <form class="toolbar" [formGroup]="form">
-    <mat-form-field class="toolbar__select">
+    <mat-form-field class="toolbar__select" style="margin-bottom: -1.25em">
         <mat-label>Телеканалы</mat-label>
         <mat-select formControlName="filterGenre">
             <mat-option *ngFor="let genre of channelsLoadDataService.showGenreList$ | async" [value]="genre.genreID">

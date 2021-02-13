@@ -1,3 +1,9 @@
 <div class="channel">
   <img mat-card-image [src]="channel?.picture?.backgrounds[0]">
 </div>
+
+<div *ngIf="mouseover" class="tooltip" [style.top.px]="77" [style.left.px]="144">
+  <img [src]="channel?.picture?.channelBlackWhites[0]">
+  <h1>{{channel?.name}}</h1>
+  <p>{{channel?.introduce}}</p>
+</div>
