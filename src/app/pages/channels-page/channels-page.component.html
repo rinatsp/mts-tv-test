@@ -1,0 +1,14 @@
+<p>{{ channelsLoadDataService?.total }} каналов</p>
+<div class="channel-container">
+    <app-channel-card
+        class="channel-page-card"
+        *ngFor="let channel of channelsLoadDataService.showChunks$ | async"
+        [channel]="channel"
+    ></app-channel-card>
+</div>
+
+<div class="channel-container__footer">
+    <button *ngIf="channelsLoadDataService?.total > channelsLoadDataService?.chunks" mat-button (click)="loadChunk()">
+        Показать еще
+    </button>
+</div>

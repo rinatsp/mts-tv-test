@@ -1,0 +1,25 @@
+:host {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    width: 100%;
+
+    @media screen and (max-width: 1280px) {
+        justify-content: center;
+    }
+}
+
+.toolbar {
+    height: 48px;
+    display: flex;
+    align-items: flex-end;
+
+    &__select {
+        margin-right: 16px;
+    }
+}
+
+.navbar {
+    margin-right: 16px;
+}
